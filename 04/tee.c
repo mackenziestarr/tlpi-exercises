@@ -6,16 +6,37 @@
 
 #define BUFFER_SIZE 1024
 
+void printUsage() {
+  fprintf(stderr, "tee [-a <append>] <file>\n");
+}
+
 int main (int argc, char *argv[]) {
 
-  if (argc != 2) {
-    fprintf(stderr, "must give file argument\n");
+  int append_mode = 0;
+
+  int arg;
+  while ((arg = getopt(argc, argv, "a")) != -1) {
+    switch (arg) {
+    case 'a':
+      append_mode = 1;
+      break;
+    case '?':
+    default:
+      printUsage();
+      exit(1);
+    }
+  }
+
+
+  if (argv[optind] == NULL) {
+    fprintf(stderr, "must specify a file as an argument\n");
     exit(1);
   }
 
+  char *filename = argv[optind];
   int output_fd;
-  output_fd = open(argv[1],
-                   O_WRONLY | O_CREAT | O_TRUNC,
+  output_fd = open(filename,
+                   O_WRONLY | O_CREAT | (append_mode ? O_APPEND : O_TRUNC),
                    S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH);
 
   char buffer[BUFFER_SIZE + 1];
