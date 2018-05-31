@@ -6,8 +6,9 @@
 
 #define BUFFER_SIZE 1024
 
-void printUsage() {
+void usage(int exit_code) {
   fprintf(stderr, "tee [-a <append>] <file>\n");
+  exit(exit_code);
 }
 
 int main (int argc, char *argv[]) {
@@ -15,16 +16,14 @@ int main (int argc, char *argv[]) {
   int append_mode = 0;
 
   int arg;
-  while ((arg = getopt(argc, argv, "a")) != -1) {
+  while ((arg = getopt(argc, argv, "ha")) != -1) {
     switch (arg) {
     case 'a':
       append_mode = 1;
       break;
+    case 'h': usage(0);
     case '?':
-    default:
-      printUsage();
-      exit(1);
-    }
+    default: usage(1);
   }
 
 
